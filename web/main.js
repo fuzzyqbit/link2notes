@@ -33,10 +33,12 @@ fileInput.addEventListener("change", () => {
   convertBtn.disabled = !fileInput.files?.length;
 });
 
-// cobalt.tools disabled YouTube on their public instance, so we hand off to
-// y2mate.com instead. If/when y2mate breaks too, the instructions list more
-// alternatives — this just covers the common case in one click.
-const CONVERTER_URL = "https://www.y2mate.com";
+// Cycle through a few converter sites — pick whichever still works today.
+// savefrom.net accepts ?url= for prefill; if that breaks, fall back to its
+// `ss`-prefix URL hack (works for youtube.com and music.youtube.com).
+function converterUrlFor(youtubeUrl) {
+  return `https://en.savefrom.net/391/?url=${encodeURIComponent(youtubeUrl)}`;
+}
 
 getAudioBtn.addEventListener("click", async () => {
   const url = ytUrlInput.value.trim();
@@ -49,7 +51,7 @@ getAudioBtn.addEventListener("click", async () => {
       await navigator.clipboard.writeText(url);
     }
   } catch { /* clipboard blocked — user can paste manually */ }
-  window.open(CONVERTER_URL, "_blank", "noopener");
+  window.open(converterUrlFor(url), "_blank", "noopener");
 });
 
 ytUrlInput.addEventListener("keydown", (e) => {
