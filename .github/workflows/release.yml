@@ -1,0 +1,95 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:        # allow manual runs from the Actions tab
+
+permissions:
+  contents: write           # needed to upload release artifacts
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14          # Apple Silicon runner (arm64)
+            artifact: LinkToNotes-mac-arm64.zip
+            python: '3.10'
+          - os: windows-latest    # x86_64 Windows runner
+            artifact: LinkToNotes-win-x64.zip
+            python: '3.10'
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller pytest
+
+      - name: Run fast tests
+        run: pytest -m "not slow"
+
+      - name: Build with PyInstaller (macOS)
+        if: runner.os == 'macOS'
+        run: pyinstaller --noconfirm LinkToNotes.spec
+
+      - name: Build with PyInstaller (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: pyinstaller --noconfirm LinkToNotes.spec
+
+      - name: Package (macOS .app → zip)
+        if: runner.os == 'macOS'
+        run: |
+          cd dist
+          ditto -c -k --sequesterRsrc --keepParent LinkToNotes.app ${{ matrix.artifact }}
+          ls -lh ${{ matrix.artifact }}
+
+      - name: Package (Windows folder → zip)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cd dist
+          Compress-Archive -Path LinkToNotes -DestinationPath ${{ matrix.artifact }} -Force
+          Get-Item ${{ matrix.artifact }} | Select-Object Name, Length
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}
+          retention-days: 14
+
+  release:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Show artifacts
+        run: ls -R artifacts
+
+      - name: Create GitHub Release with assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true

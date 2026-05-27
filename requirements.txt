@@ -1,0 +1,17 @@
+yt-dlp>=2024.0.0
+basic-pitch>=0.4.0
+music21>=9.0.0
+imageio-ffmpeg>=0.5.0
+verovio>=4.0.0
+PyMuPDF>=1.24.0
+Pillow>=10.0.0
+pywebview>=5.0
+
+# basic-pitch is pinned to its ONNX model on every platform.
+# (Default macOS CoreML model returns NaN for some inputs — see converter.py.)
+onnxruntime>=1.16
+
+# Platform-specific pywebview backends:
+#   macOS uses Cocoa/WebKit; Windows uses built-in WebView2 (preinstalled on Win 11);
+#   Linux requires the system 'gir1.2-webkit2-4.0' package plus pywebview[gtk].
+pywebview[cocoa]>=5.0 ; sys_platform == "darwin"

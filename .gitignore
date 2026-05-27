@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.python-version
+
+# PyInstaller build output (large, regeneratable)
+build/
+dist/
+*.spec.bak
+
+# Generated sheet music / test artifacts
+output/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local Claude Code / agent state (user-specific)
+.claude/settings.local.json
+.agents/
+skills-lock.json
+
+# Logs
+*.log

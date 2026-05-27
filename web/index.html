@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link To Notes — audio to sheet music</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- abcjs renders ABC notation to SVG; loaded as a UMD bundle. -->
+  <script src="https://cdn.jsdelivr.net/npm/abcjs@6.4.1/dist/abcjs-basic-min.js"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Link To Notes</h1>
+      <p class="subtitle">Drop an audio file, get beginner-friendly sheet music.</p>
+    </header>
+
+    <section class="instructions">
+      <h2>How to use</h2>
+      <ol>
+        <li>Open the YouTube video of the song you want.</li>
+        <li>Record it with your Chromebook's built-in screen recorder (see below).</li>
+        <li>Drop the recording into the <strong>Audio file</strong> box below.</li>
+        <li>Pick your instrument, then press <strong>Convert</strong>.</li>
+      </ol>
+
+      <p class="warning">
+        <strong>Important:</strong> only <strong>solo instrument</strong> recordings work.
+        One instrument playing one note at a time. No chords, no backing tracks, no
+        singing over the music, no full bands. Pick a video that's just a single
+        flute, violin, piano melody line, etc.
+      </p>
+
+      <details class="howto-download" open>
+        <summary>How to record a YouTube video on a Chromebook</summary>
+        <ol>
+          <li>Open the YouTube video but <strong>don't press play yet</strong>.</li>
+          <li>Press <kbd>Shift</kbd> + <kbd>Ctrl</kbd> + <kbd>Show Windows</kbd>
+            (the key with rectangles, usually F5).</li>
+          <li>In the toolbar at the bottom of the screen, click the <strong>video camera</strong> icon (screen record).</li>
+          <li>Click the <strong>gear / settings</strong> icon and turn on
+            <strong>Record microphone</strong> — or better, hold your Chromebook close to the speakers so the mic picks up the audio cleanly.</li>
+          <li>Choose <strong>Record partial screen</strong> and drag a box over the YouTube player (or pick full screen).</li>
+          <li>Click <strong>Record</strong>, then press play on the video. Let the whole solo play through.</li>
+          <li>When done, click the red <strong>stop</strong> button in the shelf (bottom-right corner of screen).</li>
+          <li>The file saves to your <strong>Downloads</strong> folder as a <code>.webm</code> video — drop that into the box below.</li>
+        </ol>
+        <p class="tip">
+          Tip: quiet the room before recording. Background noise, voices, or other
+          instruments will confuse the converter.
+        </p>
+      </details>
+    </section>
+
+    <section class="controls">
+      <label class="field">
+        <span>Audio file</span>
+        <input type="file" id="audio-input" accept="audio/*" />
+        <small>Any audio your browser can decode (mp3, wav, m4a, ogg).</small>
+      </label>
+
+      <label class="field">
+        <span>Instrument</span>
+        <select id="instrument-select"></select>
+      </label>
+
+      <button id="convert-btn" type="button" disabled>Convert</button>
+    </section>
+
+    <section id="status" class="status" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <span id="status-text"></span>
+    </section>
+
+    <section id="error" class="error" hidden></section>
+
+    <section id="result" class="result" hidden>
+      <div class="result-meta">
+        <span id="key-info"></span>
+        <span id="bpm-info"></span>
+      </div>
+      <div class="downloads">
+        <button id="download-pdf" type="button">Download PDF</button>
+        <button id="download-svg" type="button">Download SVG</button>
+        <button id="download-abc" type="button">Download ABC</button>
+      </div>
+      <div id="score" class="score"></div>
+      <details class="letters">
+        <summary>Note letters</summary>
+        <pre id="letters-text"></pre>
+      </details>
+    </section>
+
+    <footer>
+      <p>Runs entirely in your browser. Nothing uploaded to a server.</p>
+    </footer>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

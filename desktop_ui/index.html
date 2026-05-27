@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link To Notes</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card">
+    <header class="hero">
+      <img src="logo.png" alt="Link To Notes" class="logo" />
+      <h1>Link To Notes</h1>
+      <p class="subtitle">YouTube link → sheet music for Alto Saxophone</p>
+    </header>
+
+    <section class="form">
+      <label for="link">YouTube link</label>
+      <input id="link" type="url" placeholder="https://www.youtube.com/watch?v=…" autofocus />
+
+      <label>Instrument</label>
+      <div class="instrument">Alto Saxophone (Eb)</div>
+
+      <button id="convert" class="primary">Convert to notes</button>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section id="preview" class="preview hidden">
+      <h2 id="songTitle"></h2>
+      <div id="sheet" class="sheet"></div>
+      <details class="letters-details">
+        <summary>Show note letters</summary>
+        <pre id="notes" class="notes"></pre>
+      </details>
+      <div class="actions no-print">
+        <button id="printPdf" class="primary">Save as PDF</button>
+        <button id="saveXml">Save MusicXML</button>
+        <button id="cancel" class="ghost">Cancel</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
