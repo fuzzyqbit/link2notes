@@ -3,6 +3,8 @@
 import { INSTRUMENTS, INSTRUMENT_ORDER } from "./instruments.js";
 import { runPipeline, midiToNameForKey, preferredAccidental } from "./pipeline.js";
 
+const ytUrlInput = document.getElementById("yt-url");
+const getAudioBtn = document.getElementById("get-audio-btn");
 const fileInput = document.getElementById("audio-input");
 const instSelect = document.getElementById("instrument-select");
 const convertBtn = document.getElementById("convert-btn");
@@ -29,6 +31,30 @@ instSelect.value = "altoSax";
 
 fileInput.addEventListener("change", () => {
   convertBtn.disabled = !fileInput.files?.length;
+});
+
+getAudioBtn.addEventListener("click", async () => {
+  const url = ytUrlInput.value.trim();
+  if (!url) {
+    ytUrlInput.focus();
+    return;
+  }
+  // cobalt.tools accepts ?u= for URL prefill on its main page; clipboard
+  // copy is the fallback in case prefill isn't honored.
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(url);
+    }
+  } catch { /* clipboard blocked — user can paste manually */ }
+  const cobaltUrl = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
+  window.open(cobaltUrl, "_blank", "noopener");
+});
+
+ytUrlInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    getAudioBtn.click();
+  }
 });
 
 convertBtn.addEventListener("click", async () => {

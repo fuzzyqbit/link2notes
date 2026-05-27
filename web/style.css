@@ -145,12 +145,25 @@ header h1 {
   font-size: 0.78rem;
 }
 
-input[type="file"], select {
+input[type="file"], input[type="url"], select {
   font: inherit;
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: #fff;
+}
+
+.url-row {
+  display: flex;
+  gap: 8px;
+}
+.url-row input[type="url"] {
+  flex: 1;
+  min-width: 0;
+}
+.url-row button {
+  padding: 8px 14px;
+  white-space: nowrap;
 }
 
 button {
