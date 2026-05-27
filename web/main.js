@@ -33,21 +33,23 @@ fileInput.addEventListener("change", () => {
   convertBtn.disabled = !fileInput.files?.length;
 });
 
+// cobalt.tools disabled YouTube on their public instance, so we hand off to
+// y2mate.com instead. If/when y2mate breaks too, the instructions list more
+// alternatives — this just covers the common case in one click.
+const CONVERTER_URL = "https://www.y2mate.com";
+
 getAudioBtn.addEventListener("click", async () => {
   const url = ytUrlInput.value.trim();
   if (!url) {
     ytUrlInput.focus();
     return;
   }
-  // cobalt.tools accepts ?u= for URL prefill on its main page; clipboard
-  // copy is the fallback in case prefill isn't honored.
   try {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(url);
     }
   } catch { /* clipboard blocked — user can paste manually */ }
-  const cobaltUrl = `https://cobalt.tools/?u=${encodeURIComponent(url)}`;
-  window.open(cobaltUrl, "_blank", "noopener");
+  window.open(CONVERTER_URL, "_blank", "noopener");
 });
 
 ytUrlInput.addEventListener("keydown", (e) => {

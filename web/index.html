@@ -18,9 +18,11 @@
     <section class="instructions">
       <h2>How to use</h2>
       <ol>
-        <li>Paste a YouTube link in the <strong>YouTube link</strong> box and hit <strong>Get MP3 →</strong>.</li>
-        <li>cobalt.tools opens in a new tab — pick <strong>Audio</strong> and download the MP3.</li>
-        <li>Drop that MP3 into the <strong>Audio file</strong> box.</li>
+        <li>Paste a YouTube link in the <strong>YouTube link</strong> box and hit <strong>Get MP3 →</strong>.
+          Your link is copied to the clipboard and a converter site opens in a new tab.</li>
+        <li>Paste the link into the converter, pick <strong>Audio / MP3</strong>, and download.
+          If one site is broken or covered in ads, try another from the list.</li>
+        <li>Drop the downloaded MP3 into the <strong>Audio file</strong> box.</li>
         <li>Pick your instrument and press <strong>Convert</strong>.</li>
       </ol>
 
@@ -32,16 +34,21 @@
       </p>
 
       <details class="howto-download">
-        <summary>Why a separate site for the download?</summary>
+        <summary>Trouble downloading? Other converters to try</summary>
         <p>
           Browsers can't pull audio directly from YouTube — only YouTube's own player can.
-          <a href="https://cobalt.tools" target="_blank" rel="noopener">cobalt.tools</a> is a
-          free, ad-free converter that runs in your browser, returns the MP3, and forgets
-          your link afterwards. No account needed.
+          Free converter sites come and go; if one stops working, try another:
         </p>
+        <ul class="converter-list">
+          <li><a href="https://www.y2mate.com" target="_blank" rel="noopener">y2mate.com</a> — popular, ad-heavy</li>
+          <li><a href="https://yt1s.com" target="_blank" rel="noopener">yt1s.com</a> — fast, ad-heavy</li>
+          <li><a href="https://en.savefrom.net" target="_blank" rel="noopener">savefrom.net</a> — or just type <code>ss</code> in front of <code>youtube.com</code> in any video URL</li>
+          <li><a href="https://ezmp3.cc" target="_blank" rel="noopener">ezmp3.cc</a> — minimal UI</li>
+          <li><a href="https://notube.net" target="_blank" rel="noopener">notube.net</a> — straightforward</li>
+        </ul>
         <p class="tip">
-          Other options that work: any tool that gives you an MP3, WAV, M4A, OGG, or FLAC
-          file. If you already have a recording, skip step 2 and drop the file straight in.
+          Any format your browser can decode works (MP3, WAV, M4A, OGG, FLAC). Already have
+          a recording? Skip the download step and drop the file in directly.
         </p>
       </details>
     </section>
@@ -53,7 +60,7 @@
           <input type="url" id="yt-url" placeholder="https://www.youtube.com/watch?v=…" />
           <button id="get-audio-btn" type="button">Get MP3 →</button>
         </div>
-        <small>Opens cobalt.tools in a new tab with your link pre-filled and copied to the clipboard. Download the MP3, then drop it below.</small>
+        <small>Copies your link and opens a converter site (y2mate by default). Paste, pick MP3, download — then drop it below. More options in the instructions above.</small>
       </label>
 
       <label class="field">
