@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MusicXML emitter tests</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 1.4rem; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ddd; vertical-align: top; }
+    tr.pass td { background: #ecfdf5; }
+    tr.fail td { background: #fef2f2; }
+    .name { font-weight: 600; width: 18%; }
+    .status { width: 8%; font-weight: 600; }
+    .detail { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.85rem; color: #444; white-space: pre-wrap; word-break: break-word; }
+    #result { margin-top: 1.5rem; padding: 0.8rem 1.2rem; border-radius: 0.4rem; font-weight: 700; display: inline-block; }
+    #result.pass { background: #10b981; color: white; }
+    #result.fail { background: #ef4444; color: white; }
+  </style>
+</head>
+<body>
+  <h1>MusicXML emitter tests</h1>
+  <p>Imports <code>./musicxml.js</code> and runs the seven assertions (A through G) from the plan. Run via a local server: <code>python3 -m http.server 8000 --directory web</code>, then open <code>http://localhost:8000/musicxml.test.html</code>.</p>
+
+  <table>
+    <thead>
+      <tr><th class="name">Test</th><th class="status">Status</th><th class="detail">Detail</th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+
+  <div id="result">PENDING</div>
+
+  <script type="module">
+    import { buildMusicXml } from "./musicxml.js";
+
+    const rows = document.getElementById("rows");
+    const resultEl = document.getElementById("result");
+    let allPass = true;
+
+    function record(name, ok, detail) {
+      if (!ok) allPass = false;
+      const tr = document.createElement("tr");
+      tr.className = ok ? "pass" : "fail";
+      tr.innerHTML =
+        `<td class="name">${name}</td>` +
+        `<td class="status">${ok ? "PASS" : "FAIL"}</td>` +
+        `<td class="detail">${detail.replace(/[<>&]/g, (c) => ({"<":"&lt;",">":"&gt;","&":"&amp;"}[c]))}</td>`;
+      rows.appendChild(tr);
+    }
+
+    function parses(xml) {
+      const doc = new DOMParser().parseFromString(xml, "application/xml");
+      return !doc.querySelector("parsererror");
+    }
+
+    // Common fixtures
+    const flute = { label: "Flute", xml: { chromatic: 0, diatonic: 0, octaveChange: 0 } };
+    const altoSax = { label: "Alto Saxophone (Eb)", xml: { chromatic: -9, diatonic: -5, octaveChange: 0 } };
+
+    // -------------------------------------------------------------------------
+    // Test A: empty notes -> still valid, one measure with whole rest
+    // -------------------------------------------------------------------------
+    try {
+      const xml = buildMusicXml(
+        { notes: [], bpm: 70, key: { tonic: 0, mode: "major" } },
+        flute,
+        "Empty",
+      );
+      const restMatches = (xml.match(/<rest\/>/g) || []).length;
+      const partIdMatches = (xml.match(/<part id="P1">/g) || []).length;
+      const ok = parses(xml) && restMatches >= 1 && partIdMatches === 1 && xml.includes("<measure number=\"1\">");
+      record("A: empty notes -> whole rest", ok, `parses=${parses(xml)} restMatches=${restMatches} partIdMatches=${partIdMatches}`);
+    } catch (e) { record("A: empty notes", false, String(e)); }
+
+    // -------------------------------------------------------------------------
+    // Test B: middle-C quarter note, flute
+    // -------------------------------------------------------------------------
+    try {
+      const xml = buildMusicXml(
+        { notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 0, mode: "major" } },
+        flute,
+        "Middle C",
+      );
+      const hasC = xml.includes("<step>C</step>");
+      const hasOct4 = xml.includes("<octave>4</octave>");
+      const hasDur1 = xml.includes("<duration>1</duration>");
+      const hasQuarter = xml.includes("<type>quarter</type>");
+      const hasFifths0 = xml.includes("<fifths>0</fifths>");
+      const noTranspose = !xml.includes("<transpose>");
+      const ok = parses(xml) && hasC && hasOct4 && hasDur1 && hasQuarter && hasFifths0 && noTranspose;
+      record("B: middle-C flute", ok, `C=${hasC} oct4=${hasOct4} dur1=${hasDur1} quarter=${hasQuarter} fifths0=${hasFifths0} noTranspose=${noTranspose}`);
+    } catch (e) { record("B: middle-C flute", false, String(e)); }
+
+    // -------------------------------------------------------------------------
+    // Test C: same notes but alto sax -> <transpose> with chromatic=-9, diatonic=-5
+    // -------------------------------------------------------------------------
+    try {
+      const xml = buildMusicXml(
+        { notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 0, mode: "major" } },
+        altoSax,
+        "Alto Sax",
+      );
+      const hasChromatic = xml.includes("<chromatic>-9</chromatic>");
+      const hasDiatonic = xml.includes("<diatonic>-5</diatonic>");
+      const hasC = xml.includes("<step>C</step>");  // pitch unchanged — written-pitch input
+      const ok = parses(xml) && hasChromatic && hasDiatonic && hasC;
+      record("C: alto sax transpose", ok, `chromatic=${hasChromatic} diatonic=${hasDiatonic} stepC=${hasC}`);
+    } catch (e) { record("C: alto sax transpose", false, String(e)); }
+
+    // -------------------------------------------------------------------------
+    // Test D: title with XML-special chars escaped
+    // -------------------------------------------------------------------------
+    try {
+      const xml = buildMusicXml(
+        { notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 0, mode: "major" } },
+        flute,
+        "Tom & <Jerry>",
+      );
+      const escaped = xml.includes("Tom &amp; &lt;Jerry&gt;");
+      const ok = parses(xml) && escaped;
+      record("D: title escape", ok, `escaped=${escaped} parses=${parses(xml)}`);
+    } catch (e) { record("D: title escape", false, String(e)); }
+
+    // -------------------------------------------------------------------------
+    // Test E: ql=6 spans into measure 2 -> tie pair
+    // -------------------------------------------------------------------------
+    try {
+      const xml = buildMusicXml(
+        { notes: [{ midi: 67, ql: 6 }], bpm: 70, key: { tonic: 0, mode: "major" } },
+        flute,
+        "Tie",
+      );
+      const starts = (xml.match(/<tie type="start"\/>/g) || []).length;
+      const stops = (xml.match(/<tie type="stop"\/>/g) || []).length;
+      const tiedStart = (xml.match(/<tied type="start"\/>/g) || []).length;
+      const tiedStop = (xml.match(/<tied type="stop"\/>/g) || []).length;
+      // Sum of durations of the G notes should be 6 (4 + 2).
+      const noteDurs = [...xml.matchAll(/<note>[^]*?<step>G<\/step>[^]*?<duration>(\d+)<\/duration>[^]*?<\/note>/g)].map((m) => Number(m[1]));
+      const durSum = noteDurs.reduce((a, b) => a + b, 0);
+      const ok = parses(xml) && starts === 1 && stops === 1 && tiedStart === 1 && tiedStop === 1 && durSum === 6;
+      record("E: tie across barline (ql=6)", ok, `starts=${starts} stops=${stops} tiedStart=${tiedStart} tiedStop=${tiedStop} durSum=${durSum}`);
+    } catch (e) { record("E: tie across barline", false, String(e)); }
+
+    // -------------------------------------------------------------------------
+    // Test F: keyToFifths coverage (Bb major, A minor, C minor, E major)
+    // -------------------------------------------------------------------------
+    try {
+      const cases = [
+        { key: { tonic: 10, mode: "major" }, expected: -2, name: "Bb major" },
+        { key: { tonic: 9, mode: "minor" }, expected: 0, name: "A minor" },
+        { key: { tonic: 0, mode: "minor" }, expected: -3, name: "C minor" },
+        { key: { tonic: 4, mode: "major" }, expected: 4, name: "E major" },
+      ];
+      const details = [];
+      let allOk = true;
+      for (const c of cases) {
+        const xml = buildMusicXml(
+          { notes: [{ midi: 60, ql: 1 }], bpm: 70, key: c.key },
+          flute,
+          "K",
+        );
+        const m = xml.match(/<fifths>(-?\d+)<\/fifths>/);
+        const got = m ? Number(m[1]) : NaN;
+        const ok = got === c.expected;
+        if (!ok) allOk = false;
+        details.push(`${c.name}: got=${got} expected=${c.expected}`);
+      }
+      record("F: keyToFifths coverage", allOk, details.join(" | "));
+    } catch (e) { record("F: keyToFifths coverage", false, String(e)); }
+
+    // -------------------------------------------------------------------------
+    // Test G: DOMParser parses every preceding output (well-formed XML)
+    // -------------------------------------------------------------------------
+    try {
+      const fixtures = [
+        { args: [{ notes: [], bpm: 70, key: { tonic: 0, mode: "major" } }, flute, "Empty"] },
+        { args: [{ notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 0, mode: "major" } }, flute, "Middle C"] },
+        { args: [{ notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 0, mode: "major" } }, altoSax, "Alto"] },
+        { args: [{ notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 0, mode: "major" } }, flute, "Tom & <Jerry>"] },
+        { args: [{ notes: [{ midi: 67, ql: 6 }], bpm: 70, key: { tonic: 0, mode: "major" } }, flute, "Tie"] },
+        { args: [{ notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 10, mode: "major" } }, flute, "Bb"] },
+        { args: [{ notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 9, mode: "minor" } }, flute, "Am"] },
+        { args: [{ notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 0, mode: "minor" } }, flute, "Cm"] },
+        { args: [{ notes: [{ midi: 60, ql: 1 }], bpm: 70, key: { tonic: 4, mode: "major" } }, flute, "E"] },
+      ];
+      const results = fixtures.map((f) => parses(buildMusicXml(...f.args)));
+      const allOk = results.every((r) => r);
+      record("G: all outputs are well-formed XML", allOk, `parses=${results.filter((r) => r).length}/${results.length}`);
+    } catch (e) { record("G: well-formed XML", false, String(e)); }
+
+    // -------------------------------------------------------------------------
+    // Summary
+    // -------------------------------------------------------------------------
+    resultEl.textContent = allPass ? "PASS" : "FAIL";
+    resultEl.className = allPass ? "pass" : "fail";
+  </script>
+</body>
+</html>
