@@ -2,6 +2,7 @@
 
 import { INSTRUMENTS, INSTRUMENT_ORDER } from "./instruments.js";
 import { runPipeline, midiToNameForKey, preferredAccidental } from "./pipeline.js";
+import { STAGE_ORDER, STAGE_LABELS } from "./stages.js";
 
 const ytUrlInput = document.getElementById("yt-url");
 const getAudioBtn = document.getElementById("get-audio-btn");
@@ -9,7 +10,7 @@ const fileInput = document.getElementById("audio-input");
 const instSelect = document.getElementById("instrument-select");
 const convertBtn = document.getElementById("convert-btn");
 const statusEl = document.getElementById("status");
-const statusText = document.getElementById("status-text");
+const stageListEl = document.getElementById("stage-list");
 const errorEl = document.getElementById("error");
 const resultEl = document.getElementById("result");
 const keyInfo = document.getElementById("key-info");
@@ -67,18 +68,19 @@ convertBtn.addEventListener("click", async () => {
   lastTitle = file.name.replace(/\.[^.]+$/, "") || "score";
 
   resetUI();
-  showStatus("Starting...");
+  resetStages();
+  statusEl.hidden = false;
   convertBtn.disabled = true;
 
   try {
     const instrument = INSTRUMENTS[instSelect.value];
-    const result = await runPipeline(file, instrument, showStatus);
+    const result = await runPipeline(file, instrument, renderStage);
     renderResult(result, instrument);
   } catch (err) {
     console.error(err);
     showError(err.message || String(err));
   } finally {
-    hideStatus();
+    hideStages();
     convertBtn.disabled = false;
   }
 });
@@ -90,16 +92,65 @@ function resetUI() {
   scoreEl.innerHTML = "";
   lettersEl.textContent = "";
   lastAbc = null;
+  hideStages();
 }
 
-function showStatus(msg) {
+// Stage indicator: updates the <ol id="stage-list"> based on which pipeline
+// stage is currently emitting. Earlier stages flip to "done", later ones stay
+// "pending". The active stage's optional `percent` (0..1) is rendered as
+// "(NN%)" in its percent span.
+function renderStage(evt) {
+  if (!evt || !evt.stage) return;
+  const activeIdx = STAGE_ORDER.indexOf(evt.stage);
+  if (activeIdx < 0) return;
+  for (let i = 0; i < STAGE_ORDER.length; i++) {
+    const stageId = STAGE_ORDER[i];
+    const li = stageListEl.querySelector(`li[data-stage="${stageId}"]`);
+    if (!li) continue;
+    if (i < activeIdx) {
+      li.dataset.state = "done";
+      const pct = li.querySelector(".percent");
+      if (pct) pct.textContent = "";
+    } else if (i === activeIdx) {
+      li.dataset.state = "active";
+      const pct = li.querySelector(".percent");
+      if (pct) {
+        if (Number.isFinite(evt.percent)) {
+          pct.textContent = `(${Math.round(evt.percent * 100)}%)`;
+        } else {
+          pct.textContent = "";
+        }
+      }
+    } else {
+      li.dataset.state = "pending";
+      const pct = li.querySelector(".percent");
+      if (pct) pct.textContent = "";
+    }
+  }
+}
+
+function resetStages() {
+  for (const stageId of STAGE_ORDER) {
+    const li = stageListEl.querySelector(`li[data-stage="${stageId}"]`);
+    if (!li) continue;
+    li.dataset.state = "pending";
+    const pct = li.querySelector(".percent");
+    if (pct) pct.textContent = "";
+  }
   statusEl.hidden = false;
-  statusText.textContent = msg;
 }
-function hideStatus() {
+
+function hideStages() {
   statusEl.hidden = true;
-  statusText.textContent = "";
+  for (const stageId of STAGE_ORDER) {
+    const li = stageListEl.querySelector(`li[data-stage="${stageId}"]`);
+    if (!li) continue;
+    li.dataset.state = "pending";
+    const pct = li.querySelector(".percent");
+    if (pct) pct.textContent = "";
+  }
 }
+
 function showError(msg) {
   errorEl.hidden = false;
   errorEl.textContent = msg;
