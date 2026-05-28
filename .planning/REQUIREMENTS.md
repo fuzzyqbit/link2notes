@@ -67,29 +67,29 @@ Deferred to a later milestone. Tracked so we don't lose them.
 
 ## Traceability
 
-Empty — filled in by the roadmapper.
+Filled in by the roadmapper on 2026-05-27. All 13 v1 requirements mapped across 5 phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PAR-01 | TBD | Pending |
-| PAR-02 | TBD | Pending |
-| PAR-03 | TBD | Pending |
-| PAR-04 | TBD | Pending |
-| YT-01 | TBD | Pending |
-| YT-02 | TBD | Pending |
-| YT-03 | TBD | Pending |
-| XPLAT-01 | TBD | Pending |
-| XPLAT-02 | TBD | Pending |
-| XPLAT-03 | TBD | Pending |
-| DIST-01 | TBD | Pending |
-| DIST-02 | TBD | Pending |
-| DIST-03 | TBD | Pending |
+| PAR-01 | Phase 1: Score Export Parity | Pending |
+| PAR-02 | Phase 1: Score Export Parity | Pending |
+| PAR-04 | Phase 1: Score Export Parity | Pending |
+| PAR-03 | Phase 2: Instrument Persistence & Error Handling | Pending |
+| XPLAT-03 | Phase 2: Instrument Persistence & Error Handling | Pending |
+| YT-01 | Phase 3: YouTube Handoff Polish | Pending |
+| YT-02 | Phase 3: YouTube Handoff Polish | Pending |
+| YT-03 | Phase 3: YouTube Handoff Polish | Pending |
+| XPLAT-01 | Phase 4: Cross-Browser & Mobile | Pending |
+| XPLAT-02 | Phase 4: Cross-Browser & Mobile | Pending |
+| DIST-01 | Phase 5: Distribution & Discovery | Pending |
+| DIST-02 | Phase 5: Distribution & Discovery | Pending |
+| DIST-03 | Phase 5: Distribution & Discovery | Pending |
 
 **Coverage:**
 - v1 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️ (roadmapper will resolve)
+- Mapped to phases: 13
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-05-27*
-*Last updated: 2026-05-27 after initial definition*
+*Last updated: 2026-05-27 after roadmap creation (traceability filled)*
