@@ -38,7 +38,10 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
   2. After a successful conversion, user clicks "Save PDF" (or equivalent) and gets a PDF of the score via the browser print pathway
   3. While a conversion runs, user sees a stage indicator that names the current step (decoding audio, loading model, transcribing, rendering) and updates as the pipeline advances
   4. If MusicXML or PDF export fails, user sees a specific error message instead of a silent failure
-**Plans:** TBD
+**Plans:** 3 plans
+  - [ ] 01-01-stage-progress-PLAN.md — Stage-by-stage progress indicator (PAR-04)
+  - [ ] 01-02-musicxml-export-PLAN.md — MusicXML export with correct transpose and ties (PAR-01)
+  - [ ] 01-03-pdf-hardening-PLAN.md — PDF popup-blocker fallback and specific error copy (PAR-02)
 **UI hint:** yes
 
 ### Phase 2: Instrument Persistence & Error Handling
@@ -94,7 +97,7 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Score Export Parity | 0/0 | Not started | - |
+| 1. Score Export Parity | 0/3 | Planned | - |
 | 2. Instrument Persistence & Error Handling | 0/0 | Not started | - |
 | 3. YouTube Handoff Polish | 0/0 | Not started | - |
 | 4. Cross-Browser & Mobile | 0/0 | Not started | - |

@@ -1,6 +1,6 @@
 # State: Link To Notes — Web App Promotion (v1.0)
 
-**Last updated:** 2026-05-27
+**Last updated:** 2026-05-28
 
 ## Project Reference
 
@@ -11,9 +11,9 @@
 
 ## Current Position
 
-- **Phase:** Not started (Phase 1 next)
-- **Plan:** None
-- **Status:** Roadmap defined, awaiting `/gsd:plan-phase 1`
+- **Phase:** 1 — Score Export Parity (Planned)
+- **Plan:** None executing yet — 3 plans created (01-01 stage progress, 01-02 musicxml, 01-03 pdf hardening)
+- **Status:** Phase 1 planned and verified (plan-checker PASS round 2), awaiting `/gsd:execute-phase 1`
 - **Progress:** `[          ]` 0/5 phases complete
 
 ## Performance Metrics
@@ -36,7 +36,8 @@
 
 ### Open Todos
 
-- Plan Phase 1 (Score Export Parity)
+- Execute Phase 1 (`/gsd:execute-phase 1`) — Wave 1: 01-01 stage progress, Wave 2: 01-02 musicxml, Wave 3: 01-03 pdf hardening
+- Install MuseScore 4 before Phase 1 Task 4 human-verify checkpoint (free, https://musescore.org)
 - Verify which third-party YouTube downloaders are actually working as of release day (Phase 3)
 - Audit auto-deploy: confirm push-to-main currently triggers Pages deploy, or wire one up (Phase 5)
 
@@ -52,11 +53,12 @@
 
 ## Session Continuity
 
-**Last session:** Initial project setup — PROJECT.md, REQUIREMENTS.md, ROADMAP.md, STATE.md created.
+**Last session:** Phase 1 research + planning — RESEARCH.md + 3 PLAN.md files written, plan-checker PASS after 1 revision round (fixed 5 blocking findings: malformed verify command, wave file-conflict, ambiguous buildMeasures interface, HTML-escaped angle brackets in shell verify blocks, missing tempo verification).
 
 **Next session entry point:**
-1. Run `/gsd:plan-phase 1` to break Phase 1 (Score Export Parity) into plans
-2. First plan likely targets PAR-01 (MusicXML export) since it's the largest net-new capability
+1. Run `/gsd:execute-phase 1` (or `/gsd:execute-plan 01-01` for first wave only)
+2. Wave order: 01-01 (stage progress, no deps) → 01-02 (musicxml, deps 01-01) → 01-03 (pdf hardening, deps 01-01+01-02)
+3. Each plan ends with a `checkpoint:human-verify` blocking task — be ready to test in browser + MuseScore
 
 **Files of record:**
 - `.planning/PROJECT.md` — project context, constraints, key decisions
