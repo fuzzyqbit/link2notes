@@ -1,19 +1,36 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: executing
+last_updated: "2026-05-28T21:02:12.825Z"
+progress:
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 3
+  completed_plans: 0
+  percent: 0
+---
+
 # State: Link To Notes — Web App Promotion (v1.0)
 
-**Last updated:** 2026-05-28
+**Last updated:** 2026-05-28 (paused mid-phase after Wave 1 approval)
 
 ## Project Reference
 
 - **Project:** Link To Notes
 - **Milestone:** v1.0 — Web App Promotion
 - **Core Value:** A learner gets a readable, playable score for their chosen wind instrument from a song link or audio file, with no install and no account.
-- **Current Focus:** Promote the existing static web app (`web/`) to the primary product by closing parity, mobile, YouTube-handoff, and distribution gaps.
+- **Current Focus:** Phase 01 — Score Export Parity
 
 ## Current Position
 
+Phase: 01 (Score Export Parity) — EXECUTING
+Plan: 1 of 3
+
 - **Phase:** 1 — Score Export Parity (Planned)
 - **Plan:** None executing yet — 3 plans created (01-01 stage progress, 01-02 musicxml, 01-03 pdf hardening)
-- **Status:** Phase 1 planned and verified (plan-checker PASS round 2), awaiting `/gsd:execute-phase 1`
+- **Status:** Executing Phase 01
 - **Progress:** `[          ]` 0/5 phases complete
 
 ## Performance Metrics
@@ -53,14 +70,18 @@
 
 ## Session Continuity
 
-**Last session:** Phase 1 research + planning — RESEARCH.md + 3 PLAN.md files written, plan-checker PASS after 1 revision round (fixed 5 blocking findings: malformed verify command, wave file-conflict, ambiguous buildMeasures interface, HTML-escaped angle brackets in shell verify blocks, missing tempo verification).
+**Last session (2026-05-28):** Started `/gsd:execute-phase 1`. Plan 01-01 (stage-progress, PAR-04) executed in worktree `agent-a387728009ec3c0c1`. All 3 tasks complete (Tasks 1+2 auto, Task 3 human-verify APPROVED — all 4 stages light up + transition correctly). Also fixed a pre-existing sample-rate bug in `web/pipeline.js` (decodeAudio now resamples to 22050 mono via OfflineAudioContext — basic-pitch was rejecting 44100). Paused before merging worktree to main + starting Wave 2.
 
 **Next session entry point:**
-1. Run `/gsd:execute-phase 1` (or `/gsd:execute-plan 01-01` for first wave only)
-2. Wave order: 01-01 (stage progress, no deps) → 01-02 (musicxml, deps 01-01) → 01-03 (pdf hardening, deps 01-01+01-02)
-3. Each plan ends with a `checkpoint:human-verify` blocking task — be ready to test in browser + MuseScore
+
+1. **Merge worktree 01-01 to main** — branch `worktree-agent-a387728009ec3c0c1` in `.claude/worktrees/agent-a387728009ec3c0c1/`. Commits: `43e6c6f` (Task 1: stages.js + pipeline events), `88d9ff4` (Task 2: UI), `746f4be` (partial SUMMARY), `6e5c1e0` (sample-rate fix), `72d9af6` (final SUMMARY). After merge, `git worktree remove` it.
+2. Update ROADMAP.md (mark `01-01-stage-progress-PLAN.md` checkbox) and re-run `state.complete-plan` for 01-01.
+3. Start Wave 2: `/gsd:execute-plan 01-02` OR `/gsd:execute-phase 1` (resumes from incomplete plans).
+4. Wave 2 = Plan 01-02 (musicxml-export, PAR-01). Wave 3 = Plan 01-03 (pdf-hardening, PAR-02). Each ends with a human-verify checkpoint — MuseScore 4 needed for 01-02.
+5. Test audio file `test-tune.aiff` lives at project root (synthesized via `say -o ...`) — reuse for Wave 2 testing.
 
 **Files of record:**
+
 - `.planning/PROJECT.md` — project context, constraints, key decisions
 - `.planning/REQUIREMENTS.md` — v1/v2 requirements with traceability
 - `.planning/ROADMAP.md` — 5 phases, success criteria, coverage
