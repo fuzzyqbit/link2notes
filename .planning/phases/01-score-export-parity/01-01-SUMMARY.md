@@ -4,7 +4,7 @@ plan: 01
 subsystem: web/pipeline
 tags: [progress-ui, pipeline-instrumentation, stage-indicator]
 requirements: [PAR-04]
-status: awaiting-human-verify
+status: complete
 
 dependency_graph:
   requires: []
