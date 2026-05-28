@@ -18,6 +18,7 @@ import {
   addPitchBendsToNoteEvents,
   outputToNotesPoly,
 } from "https://esm.sh/@spotify/basic-pitch@1.0.1";
+import { STAGE, STAGE_LABELS } from "./stages.js";
 
 // jsdelivr serves arbitrary files inside an npm package; basic-pitch ships the
 // TFJS model at /model/model.json with weight shards next to it.
@@ -35,16 +36,29 @@ const NOTE_NAMES_SHARP = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 const NOTE_NAMES_FLAT  = ["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
 
 // -----------------------------------------------------------------------------
-// 1. Audio decoding (browser decodes anything; basic-pitch resamples internally)
+// 1. Audio decoding (browser decodes anything; we resample to 22050 mono since
+//    basic-pitch's model expects exactly that — AudioContext.decodeAudioData
+//    returns audio at the device sample rate, not the source's).
 // -----------------------------------------------------------------------------
 
 export async function decodeAudio(file, progress) {
-  if (progress) progress("Decoding audio...");
+  if (progress) progress({ stage: STAGE.DECODING, label: STAGE_LABELS[STAGE.DECODING] });
   const arrayBuf = await file.arrayBuffer();
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const decoded = await ctx.decodeAudioData(arrayBuf);
-  ctx.close();
-  return decoded;
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  const tmp = new Ctx();
+  const decoded = await tmp.decodeAudioData(arrayBuf);
+  tmp.close();
+
+  if (decoded.sampleRate === BP_SAMPLE_RATE && decoded.numberOfChannels === 1) return decoded;
+
+  const targetLen = Math.ceil(decoded.duration * BP_SAMPLE_RATE);
+  const OfflineCtx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const offline = new OfflineCtx(1, targetLen, BP_SAMPLE_RATE);
+  const src = offline.createBufferSource();
+  src.buffer = decoded;
+  src.connect(offline.destination);
+  src.start();
+  return await offline.startRendering();
 }
 
 // -----------------------------------------------------------------------------
@@ -52,7 +66,7 @@ export async function decodeAudio(file, progress) {
 // -----------------------------------------------------------------------------
 
 export async function extractNotes(audioBuffer, progress) {
-  if (progress) progress("Loading model (first run only)...");
+  if (progress) progress({ stage: STAGE.MODEL_LOADING, label: STAGE_LABELS[STAGE.MODEL_LOADING] });
 
   const bp = new BasicPitch(MODEL_URL);
 
@@ -67,7 +81,7 @@ export async function extractNotes(audioBuffer, progress) {
       contours.push(...c);
     },
     (pct) => {
-      if (progress) progress(`Pitch detection: ${Math.round(pct * 100)}%`);
+      if (progress) progress({ stage: STAGE.TRANSCRIBING, label: STAGE_LABELS[STAGE.TRANSCRIBING], percent: pct });
     },
   );
 
@@ -296,20 +310,17 @@ export async function runPipeline(file, instrument, progress) {
   const audio = await decodeAudio(file, progress);
   const raw = await extractNotes(audio, progress);
 
-  if (progress) progress("Filtering to monophonic line...");
+  if (progress) progress({ stage: STAGE.RENDERING, label: STAGE_LABELS[STAGE.RENDERING] });
   const mono = monophonicFilter(raw);
   if (!mono.length) throw new Error("No notes detected in audio.");
 
   const bpmSource = estimateBpm(mono);
 
-  if (progress) progress("Transposing for instrument...");
   const fitted = transposeAndFit(mono, instrument);
 
-  if (progress) progress("Detecting key...");
   const key = detectKey(fitted);
   const snapped = snapToScale(fitted, key);
 
-  if (progress) progress("Quantizing rhythm...");
   const notes = quantizeAndSimplify(snapped, bpmSource);
 
   if (!notes.length) throw new Error("No notes survived simplification — try a clearer recording.");

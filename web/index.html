@@ -78,8 +78,28 @@
     </section>
 
     <section id="status" class="status" hidden>
-      <div class="spinner" aria-hidden="true"></div>
-      <span id="status-text"></span>
+      <ol id="stage-list">
+        <li data-stage="decoding" data-state="pending">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="stage-label">Decoding audio</span>
+          <span class="percent"></span>
+        </li>
+        <li data-stage="model-loading" data-state="pending">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="stage-label">Loading model (first run only)</span>
+          <span class="percent"></span>
+        </li>
+        <li data-stage="transcribing" data-state="pending">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="stage-label">Transcribing notes</span>
+          <span class="percent"></span>
+        </li>
+        <li data-stage="rendering" data-state="pending">
+          <span class="spinner" aria-hidden="true"></span>
+          <span class="stage-label">Rendering score</span>
+          <span class="percent"></span>
+        </li>
+      </ol>
     </section>
 
     <section id="error" class="error" hidden></section>
