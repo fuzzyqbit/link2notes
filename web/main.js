@@ -294,6 +294,23 @@ function escapeAbc(s) {
   return s.replace(/[\r\n]/g, " ");
 }
 
+// XML/HTML entity escape for safely injecting user-supplied titles into the
+// <title> tag of a popup or iframe document. Kept local to this module so
+// the PDF path has no cross-plan dependency on musicxml.js (Plan 02/03 are
+// designed to be independently shippable).
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (ch) => {
+    switch (ch) {
+      case "&": return "&amp;";
+      case "<": return "&lt;";
+      case ">": return "&gt;";
+      case "\"": return "&quot;";
+      case "'": return "&apos;";
+    }
+    return ch;
+  });
+}
+
 // -----------------------------------------------------------------------------
 // Downloads
 // -----------------------------------------------------------------------------
@@ -332,28 +349,93 @@ document.getElementById("download-svg").addEventListener("click", () => {
   downloadBlob(xml, `${lastTitle}.svg`, "image/svg+xml");
 });
 
+// PDF export uses the browser's print dialog -> "Save as PDF" (simpler + higher
+// fidelity than rasterizing). The path is hardened against three real failure
+// modes documented in RESEARCH.md §PDF Hardening Deep Dive:
+//   1. Popup blockers (window.open returns null)  -> hidden iframe fallback
+//   2. iOS Safari blank-preview quirk             -> 500ms delay + early close
+//   3. User clicks before a successful conversion -> specific error copy
 document.getElementById("download-pdf").addEventListener("click", () => {
-  // Browser print dialog -> "Save as PDF". Simpler + higher fidelity than rasterizing.
   const svgEl = scoreEl.querySelector("svg");
-  if (!svgEl) return;
-  const xml = new XMLSerializer().serializeToString(svgEl);
-
-  const win = window.open("", "_blank");
-  if (!win) {
-    showError("Pop-up blocked — allow pop-ups for this site to export PDF.");
+  if (!svgEl) {
+    // Non-silent guard — replaces the previous `return` that swallowed the click.
+    showError("Run a conversion first, then export PDF.");
     return;
   }
+  const xml = new XMLSerializer().serializeToString(svgEl);
+  printScore(xml, lastTitle);
+});
+
+// Routes the print request: try a real popup first (preserves the re-printable
+// tab UX), fall back to an invisible iframe when window.open is blocked.
+function printScore(xml, title) {
+  let win = null;
+  try {
+    win = window.open("", "_blank");
+  } catch {
+    // Some browsers throw instead of returning null when popups are blocked.
+    win = null;
+  }
+  if (win) {
+    printInWindow(win, xml, title);
+    return;
+  }
+  try {
+    printInIframe(xml, title);
+  } catch (err) {
+    console.error(err);
+    showError("Couldn't open the print dialog. Try the SVG download instead.");
+  }
+}
+
+// Writes the print HTML into an open popup window. The inline script waits
+// 500ms before calling window.print() — RESEARCH.md §iOS Safari blank-preview
+// pitfall shows the previous 200ms is too short on mobile Safari, which leads
+// to an empty preview. document.close() is called BEFORE the inline script
+// runs (otherwise iOS sometimes prints with the SVG still unparsed).
+function printInWindow(win, xml, title) {
   win.document.write(`
-    <!doctype html><html><head><meta charset="utf-8"><title>${escapeAbc(lastTitle)}</title>
+    <!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
     <style>
       @page { size: letter; margin: 0.5in; }
       body { margin: 0; font-family: sans-serif; }
       svg { width: 100%; height: auto; }
     </style></head>
-    <body>${xml}<script>window.onload = () => setTimeout(() => window.print(), 200);<\/script></body></html>
+    <body>${xml}<script>window.onload = () => setTimeout(() => window.print(), 500);<\/script></body></html>
   `);
   win.document.close();
-});
+}
+
+// Popup-blocker fallback: render into a hidden same-origin iframe and trigger
+// its print(). Styled with inline `position: fixed; 0x0; border: 0;` so it
+// doesn't disrupt the page layout. 250ms before print() gives the browser time
+// to parse the SVG; 1000ms before remove() gives it time to capture the print
+// dialog before the iframe goes away.
+function printInIframe(xml, title) {
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "0";
+  document.body.appendChild(iframe);
+
+  const doc = iframe.contentDocument;
+  doc.open();
+  doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title><style>@page { size: letter; margin: 0.5in; } body { margin: 0; font-family: sans-serif; } svg { width: 100%; height: auto; }</style></head><body>${xml}</body></html>`);
+  doc.close();
+
+  setTimeout(() => {
+    try {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    } catch {
+      // Dialog cancelled or blocked — iframe still gets cleaned up below.
+    }
+    setTimeout(() => iframe.remove(), 1000);
+  }, 250);
+}
 
 function downloadBlob(content, filename, mime) {
   const blob = new Blob([content], { type: mime });
