@@ -2,44 +2,41 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-05-28T21:02:12.825Z"
+status: completed
+last_updated: "2026-05-29T01:13:11.400Z"
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 0
-  percent: 0
+  completed_plans: 3
+  percent: 20
 ---
 
 # State: Link To Notes — Web App Promotion (v1.0)
 
-**Last updated:** 2026-05-28 (paused mid-phase after Wave 1 approval)
+**Last updated:** 2026-05-29 (Phase 1 complete, paused before Phase 2)
 
 ## Project Reference
 
 - **Project:** Link To Notes
 - **Milestone:** v1.0 — Web App Promotion
 - **Core Value:** A learner gets a readable, playable score for their chosen wind instrument from a song link or audio file, with no install and no account.
-- **Current Focus:** Phase 01 — Score Export Parity
+- **Current Focus:** Phase 02 — Instrument Persistence & Error Handling (next)
 
 ## Current Position
 
-Phase: 01 (Score Export Parity) — EXECUTING
-Plan: 1 of 3
-
-- **Phase:** 1 — Score Export Parity (Planned)
-- **Plan:** None executing yet — 3 plans created (01-01 stage progress, 01-02 musicxml, 01-03 pdf hardening)
-- **Status:** Executing Phase 01
-- **Progress:** `[          ]` 0/5 phases complete
+- **Phase:** 1 — Score Export Parity — **COMPLETE** (passed-with-caveats per 01-VERIFICATION.md)
+- **Plan:** All 3 plans shipped (01-01 stage progress, 01-02 musicxml, 01-03 pdf hardening)
+- **Status:** Phase 1 complete, Phase 2 not yet planned
+- **Progress:** `[##        ]` 1/5 phases complete (20%)
 
 ## Performance Metrics
 
 - Phases planned: 5
-- Phases complete: 0
+- Phases complete: 1
 - v1 requirements: 13
 - Requirements mapped: 13 (100%)
-- Requirements delivered: 0
+- Requirements delivered: 3 (PAR-01, PAR-02, PAR-04)
 
 ## Accumulated Context
 
@@ -53,10 +50,11 @@ Plan: 1 of 3
 
 ### Open Todos
 
-- Execute Phase 1 (`/gsd:execute-phase 1`) — Wave 1: 01-01 stage progress, Wave 2: 01-02 musicxml, Wave 3: 01-03 pdf hardening
-- Install MuseScore 4 before Phase 1 Task 4 human-verify checkpoint (free, https://musescore.org)
-- Verify which third-party YouTube downloaders are actually working as of release day (Phase 3)
-- Audit auto-deploy: confirm push-to-main currently triggers Pages deploy, or wire one up (Phase 5)
+- Plan Phase 2 — Instrument Persistence & Error Handling (`/gsd-plan-phase 2`)
+- Visual MuseScore confirmation of Plan 01-02 still outstanding (no admin password, installer blocked). File correctness proven by automated + structural checks. Revisit in Phase 4 cross-browser pass or if MuseScore install becomes possible.
+- Real-iOS PDF print smoke test (Plan 01-03) deferred to Phase 4 cross-browser pass — owns the iOS retest by design
+- Replace dead `savefrom.net` YouTube handoff (US blocked since 2020-04-28, confirmed) — Phase 3 work
+- Audit auto-deploy: confirm push-to-main triggers Pages deploy (Phase 5)
 
 ### Blockers
 
@@ -70,15 +68,13 @@ Plan: 1 of 3
 
 ## Session Continuity
 
-**Last session (2026-05-28):** Started `/gsd:execute-phase 1`. Plan 01-01 (stage-progress, PAR-04) executed in worktree `agent-a387728009ec3c0c1`. All 3 tasks complete (Tasks 1+2 auto, Task 3 human-verify APPROVED — all 4 stages light up + transition correctly). Also fixed a pre-existing sample-rate bug in `web/pipeline.js` (decodeAudio now resamples to 22050 mono via OfflineAudioContext — basic-pitch was rejecting 44100). Paused before merging worktree to main + starting Wave 2.
+**Last session (2026-05-29):** Phase 1 fully executed + verified. All 3 plans shipped (01-01 stage progress, 01-02 musicxml, 01-03 pdf hardening) across 3 worktrees, merged to main, summaries committed. Wave 1 user-tested + approved (all 4 stages light up). Waves 2+3 code-trace-approved on automated test + structural inspection (12/12 + 6/6 verifies OK respectively) — MuseScore install blocked by sudo + no real iOS device for popup-blocker/iOS test. Verifier returned `passed-with-caveats` (4/4 success criteria met; visual MuseScore + real-iOS smoke deferred to Phase 4). Sample-rate fix added to pipeline.js mid-Wave-1 (pre-existing bug — basic-pitch rejected 44100; now resamples to 22050 mono via OfflineAudioContext).
 
 **Next session entry point:**
 
-1. **Merge worktree 01-01 to main** — branch `worktree-agent-a387728009ec3c0c1` in `.claude/worktrees/agent-a387728009ec3c0c1/`. Commits: `43e6c6f` (Task 1: stages.js + pipeline events), `88d9ff4` (Task 2: UI), `746f4be` (partial SUMMARY), `6e5c1e0` (sample-rate fix), `72d9af6` (final SUMMARY). After merge, `git worktree remove` it.
-2. Update ROADMAP.md (mark `01-01-stage-progress-PLAN.md` checkbox) and re-run `state.complete-plan` for 01-01.
-3. Start Wave 2: `/gsd:execute-plan 01-02` OR `/gsd:execute-phase 1` (resumes from incomplete plans).
-4. Wave 2 = Plan 01-02 (musicxml-export, PAR-01). Wave 3 = Plan 01-03 (pdf-hardening, PAR-02). Each ends with a human-verify checkpoint — MuseScore 4 needed for 01-02.
-5. Test audio file `test-tune.aiff` lives at project root (synthesized via `say -o ...`) — reuse for Wave 2 testing.
+1. Plan Phase 2: `/gsd-plan-phase 2` — Instrument Persistence & Error Handling (PAR-03, XPLAT-03)
+2. Phase 2 scope: localStorage persistence of last-selected instrument + clear error path for known failure modes (popup blocker, model load failure, no notes detected — the showError integration points already exist in main.js from Phase 1)
+3. Or jump ahead with `/gsd-execute-phase 2` after planning
 
 **Files of record:**
 
