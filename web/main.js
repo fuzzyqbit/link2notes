@@ -3,6 +3,7 @@
 import { INSTRUMENTS, INSTRUMENT_ORDER } from "./instruments.js";
 import { runPipeline, midiToNameForKey, preferredAccidental } from "./pipeline.js";
 import { STAGE_ORDER, STAGE_LABELS } from "./stages.js";
+import { buildMusicXml } from "./musicxml.js";
 
 const ytUrlInput = document.getElementById("yt-url");
 const getAudioBtn = document.getElementById("get-audio-btn");
@@ -20,6 +21,10 @@ const lettersEl = document.getElementById("letters-text");
 
 let lastAbc = null;
 let lastTitle = "score";
+// MusicXML export needs the full pipeline result + the selected instrument
+// (not just the rendered ABC), so hold references after each successful render.
+let lastResult = null;
+let lastInstrument = null;
 
 // Populate instrument dropdown.
 for (const id of INSTRUMENT_ORDER) {
@@ -92,6 +97,8 @@ function resetUI() {
   scoreEl.innerHTML = "";
   lettersEl.textContent = "";
   lastAbc = null;
+  lastResult = null;
+  lastInstrument = null;
   hideStages();
 }
 
@@ -157,6 +164,11 @@ function showError(msg) {
 }
 
 function renderResult(result, instrument) {
+  // Capture export-ready state BEFORE abcjs.renderAbc — if rendering throws
+  // we still want Save MusicXML to work against the pipeline result.
+  lastResult = result;
+  lastInstrument = instrument;
+
   const abc = buildAbc(result, instrument);
   lastAbc = abc;
 
@@ -285,6 +297,26 @@ function escapeAbc(s) {
 // -----------------------------------------------------------------------------
 // Downloads
 // -----------------------------------------------------------------------------
+
+document.getElementById("download-musicxml").addEventListener("click", () => {
+  // Specific error categories (no silent failures):
+  //   - No pipeline result yet  -> "Run a conversion first..."
+  //   - Emitter throws          -> surface the message via showError + console
+  if (!lastResult || !lastInstrument) {
+    showError("Run a conversion first, then export MusicXML.");
+    return;
+  }
+  let xml;
+  try {
+    xml = buildMusicXml(lastResult, lastInstrument, lastTitle);
+  } catch (err) {
+    console.error(err);
+    showError("Couldn't build the MusicXML file: " + (err.message || String(err)));
+    return;
+  }
+  // IANA-registered MIME for MusicXML (RESEARCH.md §File extension + MIME).
+  downloadBlob(xml, `${lastTitle}.musicxml`, "application/vnd.recordare.musicxml+xml");
+});
 
 document.getElementById("download-abc").addEventListener("click", () => {
   if (!lastAbc) return;
