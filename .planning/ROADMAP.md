@@ -61,7 +61,11 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
   2. User on a browser that cannot load the basic-pitch model sees a clear, plain-language error within ~15 seconds instead of an indefinite spinner
   3. The error message names the likely cause (browser/device unable to run the model) and suggests trying a desktop browser
 
-**Plans:** TBD
+**Plans:** 2 plans
+
+  - [ ] 02-01-instrument-persistence-PLAN.md — localStorage persistence of instrument selection (PAR-03)
+  - [ ] 02-02-model-load-watchdog-PLAN.md — reset-on-progress watchdog + ModelLoadError friendly copy (XPLAT-03)
+
 **UI hint:** yes
 
 ### Phase 3: YouTube Handoff Polish
@@ -115,7 +119,7 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Score Export Parity | 3/3 | Complete   | 2026-05-29 |
-| 2. Instrument Persistence & Error Handling | 0/0 | Not started | - |
+| 2. Instrument Persistence & Error Handling | 0/2 | Planned | - |
 | 3. YouTube Handoff Polish | 0/0 | Not started | - |
 | 4. Cross-Browser & Mobile | 0/0 | Not started | - |
 | 5. Distribution & Discovery | 0/0 | Not started | - |
