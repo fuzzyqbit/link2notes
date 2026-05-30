@@ -80,7 +80,11 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
   2. User sees a short, jargon-free explanation on the page describing the "download the audio, then upload it here" two-step flow
   3. Every downloader link visible to the user has been checked and actually loads / accepts the URL on the day of release; dead alternates are removed (not hidden, removed)
 
-**Plans:** TBD
+**Plans:** 2 plans
+
+Plans:
+- [ ] 03-01-handoff-mechanism-PLAN.md — Replace dead savefrom.net with cobalt.tools via web/downloaders.js registry + iOS-safe click handler (YT-01, YT-03)
+- [ ] 03-02-copy-and-checklist-PLAN.md — Jargon-free 2-step instructions + web/DOWNLOADERS.md ship-day verification checklist (YT-02, YT-03)
 **UI hint:** yes
 
 ### Phase 4: Cross-Browser & Mobile
@@ -120,7 +124,7 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
 |-------|----------------|--------|-----------|
 | 1. Score Export Parity | 3/3 | Complete   | 2026-05-29 |
 | 2. Instrument Persistence & Error Handling | 2/2 | Complete   | 2026-05-30 |
-| 3. YouTube Handoff Polish | 0/0 | Not started | - |
+| 3. YouTube Handoff Polish | 0/2 | Planned | - |
 | 4. Cross-Browser & Mobile | 0/0 | Not started | - |
 | 5. Distribution & Discovery | 0/0 | Not started | - |
 
