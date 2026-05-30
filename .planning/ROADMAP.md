@@ -22,7 +22,7 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
 
 - [x] **Phase 1: Score Export Parity** — User can export the rendered score as MusicXML and PDF with clear stage-by-stage progress (completed 2026-05-29)
 - [x] **Phase 2: Instrument Persistence & Error Handling** — Instrument choice survives reloads and model failures surface as readable errors (completed 2026-05-30)
-- [ ] **Phase 3: YouTube Handoff Polish** — YouTube paste produces a one-click handoff to a verified working downloader with plain-language instructions
+- [x] **Phase 3: YouTube Handoff Polish** — YouTube paste produces a one-click handoff to a verified working downloader with plain-language instructions (completed 2026-05-30)
 - [ ] **Phase 4: Cross-Browser & Mobile** — Verified working pipeline and usable layout on iOS Safari, Android Chrome, and desktop browsers
 - [ ] **Phase 5: Distribution & Discovery** — Repo, README, and auto-deploy all point at the live web app as the recommended product
 
@@ -80,11 +80,13 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
   2. User sees a short, jargon-free explanation on the page describing the "download the audio, then upload it here" two-step flow
   3. Every downloader link visible to the user has been checked and actually loads / accepts the URL on the day of release; dead alternates are removed (not hidden, removed)
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 03-01-handoff-mechanism-PLAN.md — Replace dead savefrom.net with cobalt.tools via web/downloaders.js registry + iOS-safe click handler (YT-01, YT-03)
-- [ ] 03-02-copy-and-checklist-PLAN.md — Jargon-free 2-step instructions + web/DOWNLOADERS.md ship-day verification checklist (YT-02, YT-03)
+
+- [x] 03-01-handoff-mechanism-PLAN.md — Replace dead savefrom.net with cobalt.tools via web/downloaders.js registry + iOS-safe click handler (YT-01, YT-03)
+- [x] 03-02-copy-and-checklist-PLAN.md — Jargon-free 2-step instructions + web/DOWNLOADERS.md ship-day verification checklist (YT-02, YT-03)
+
 **UI hint:** yes
 
 ### Phase 4: Cross-Browser & Mobile
@@ -124,7 +126,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Score Export Parity | 3/3 | Complete   | 2026-05-29 |
 | 2. Instrument Persistence & Error Handling | 2/2 | Complete   | 2026-05-30 |
-| 3. YouTube Handoff Polish | 0/2 | Planned | - |
+| 3. YouTube Handoff Polish | 2/2 | Complete   | 2026-05-30 |
 | 4. Cross-Browser & Mobile | 0/0 | Not started | - |
 | 5. Distribution & Discovery | 0/0 | Not started | - |
 
