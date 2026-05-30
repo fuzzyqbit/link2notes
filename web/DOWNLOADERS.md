@@ -64,4 +64,9 @@ ships.
 
 ---
 
-**Most recent ship-day verification:** 2026-05-30 — cobalt.tools only.
+**Most recent ship-day verification:** 2026-05-30 — cobalt.meowing.de (PRIMARY) + cnvmp3.com (copy-paste fallback).
+
+## Rotation log
+
+- **2026-05-30 (later same day):** Pulled `cobalt.tools` as PRIMARY. User reported "cobalt is not able to download links" — confirmed main cobalt.tools instance is YouTube-blocked. Swapped to community instance `cobalt.meowing.de` (same open-source frontend, same `#URL` prefill protocol, instance was up + working at time of swap). Added `cnvmp3.com` as copy-paste fallback (no prefill — `urlFor: () => landingUrl`). Past PRIMARY `cobalt.tools` removed (per "REMOVE not hide" rule).
+- **2026-05-30:** Initial ship — `cobalt.tools` as PRIMARY (Phase 3, see 03-RESEARCH.md).

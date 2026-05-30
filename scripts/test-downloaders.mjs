@@ -23,7 +23,7 @@ async function main() {
   // If cobalt changes its prefill syntax, or if someone substitutes a query string,
   // this test fails — forcing a deliberate update.
   const ytUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-  const expected = "https://cobalt.tools/#https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ";
+  const expected = "https://cobalt.meowing.de/#https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ";
   assert.equal(
     PRIMARY.urlFor(ytUrl),
     expected,
@@ -31,12 +31,16 @@ async function main() {
   );
   console.log("OK test-1-cobalt-prefill-format-locked");
 
-  // ---- Test 2: PRIMARY.id === "cobalt" ----
+  // ---- Test 2: PRIMARY.id starts with "cobalt" ----
   // Guards against silently flipping the primary by reordering the DOWNLOADERS
-  // array. If a different downloader becomes primary, this test fails and the
-  // dev has to make the change explicit.
-  assert.equal(PRIMARY.id, "cobalt", "PRIMARY.id is cobalt");
-  console.log("OK test-2-primary-id-is-cobalt");
+  // array. We allow any cobalt-family instance (cobalt, cobalt-meowing, etc.)
+  // since main cobalt.tools and community instances share the same prefill
+  // protocol — see DOWNLOADERS.md for rotation history.
+  assert.ok(
+    PRIMARY.id.startsWith("cobalt"),
+    `PRIMARY.id starts with "cobalt" (was ${PRIMARY.id})`,
+  );
+  console.log("OK test-2-primary-id-is-cobalt-family");
 
   // ---- Test 3: Every DOWNLOADERS entry has all required fields ----
   // Required: id, name, urlFor (function), landingUrl, lastVerified (ISO date).

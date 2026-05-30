@@ -22,19 +22,25 @@
 
 export const DOWNLOADERS = [
   {
-    id: "cobalt",
-    name: "cobalt.tools",
-    note: "open-source, no ads, no signup — recommended",
-    urlFor: (yt) => `https://cobalt.tools/#${encodeURIComponent(yt)}`,
-    landingUrl: "https://cobalt.tools",
+    id: "cobalt-meowing",
+    name: "cobalt (meowing.de instance)",
+    note: "open-source cobalt frontend on a community instance — main cobalt.tools is YouTube-blocked, this one works",
+    urlFor: (yt) => `https://cobalt.meowing.de/#${encodeURIComponent(yt)}`,
+    landingUrl: "https://cobalt.meowing.de",
+    lastVerified: "2026-05-30",
+  },
+  {
+    id: "cnvmp3",
+    name: "cnvmp3.com",
+    note: "ad-free, donation-funded — paste your link manually (no prefill)",
+    urlFor: () => "https://cnvmp3.com",
+    landingUrl: "https://cnvmp3.com",
     lastVerified: "2026-05-30",
   },
   // Alternates: add ONLY after manually verifying both (a) loads from a US IP,
-  // (b) accepts a YouTube URL and produces an audio download. Candidates worth
-  // re-checking on release day (Phase 3 research, 2026-05-30):
-  //   - dltkk.to    — yt-dlp web frontend, claims no ads/no signup, no prefill
-  //   - cnvmp3.com  — ad-free, donation-funded, no prefill documented
-  // For copy-paste-only alternates, set `urlFor: (yt) => "https://<site>"`
+  // (b) accepts a YouTube URL and produces an audio download.
+  // Past PRIMARY (kept as a note, not surfaced): cobalt.tools — see DOWNLOADERS.md log.
+  // For copy-paste-only alternates, set `urlFor: () => "https://<site>"`
   // (no prefill — just opens the landing page) and surface that in UI copy.
 ];
 
