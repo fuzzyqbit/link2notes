@@ -1,25 +1,8 @@
 # Link To Notes — Web Version
 
-Static webapp. Audio file → beginner sheet music for flute, clarinet, bass clarinet, alto sax, tenor sax, or baritone sax. Everything runs in the browser. No server, no cost.
+Live app: https://fuzzyqbit.github.io/link2notes/ — drop an audio file (or paste a YouTube link), pick a wind instrument (flute, clarinet, bass clarinet, alto sax, tenor sax, baritone sax), get beginner-friendly sheet music. Runs entirely in your browser. No install, no account, no server.
 
-## Run locally
-
-```sh
-cd web
-python3 -m http.server 8000
-open http://localhost:8000
-```
-
-ES modules need a real HTTP origin — don't open `index.html` via `file://`.
-
-## Deploy to GitHub Pages (free hosting)
-
-1. Push this repo to GitHub.
-2. Repo settings → **Pages**.
-3. Source: **Deploy from a branch**, branch: `main` (or `master`), folder: `/web`.
-4. Save. Your site goes live at `https://<user>.github.io/<repo>/`.
-
-That URL is what users "search up and run". No build step.
+See the [root README](../README.md) for the full project overview and the desktop app.
 
 ## What it uses
 
@@ -43,3 +26,24 @@ All loaded from public CDNs (esm.sh + jsdelivr) on first visit; cached by the br
 - `instruments.js` — transposition + range table per instrument.
 - `pipeline.js` — port of `converter.py`: decode → ML → monophonic filter → transpose → key snap → quantize.
 - `main.js` — glue + ABC builder + render + downloads.
+
+## Run locally (contributors)
+
+Most users don't need this — open the live URL above. Local dev is only for editing the source.
+
+```sh
+cd web
+python3 -m http.server 8000
+open http://localhost:8000
+```
+
+ES modules need a real HTTP origin — don't open `index.html` via `file://`.
+
+## Maintainer: Deploy to GitHub Pages
+
+Current deploy method (subject to change — see `.github/workflows/` for the Actions-based replacement).
+
+1. Push this repo to GitHub.
+2. Repo settings → **Pages**.
+3. Source: **Deploy from a branch**, branch: `main` (or `master`), folder: `/web`.
+4. Save. Your site goes live at `https://<user>.github.io/<repo>/`.
