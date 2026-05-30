@@ -102,7 +102,14 @@ Plans:
   3. User on desktop Chrome, Safari, Firefox, and Edge can complete the same flow (smoke-tested per browser)
   4. On a phone-sized viewport, the page has no horizontal scroll, primary controls (file picker, instrument, convert, export) are reachable with one thumb, and the rendered score pans/zooms readably
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+
+- [ ] 04-01-mobile-layout-PLAN.md — Fluid score container CSS + main.js renderAbc container-width fix + iOS-safe 16px input font-size (XPLAT-02)
+- [ ] 04-02-audio-upload-hardening-PLAN.md — Widen file accept attribute for iOS Voice Memos + AudioDecodeError friendly copy on decode failure (XPLAT-01)
+- [ ] 04-03-test-matrix-walkthrough-PLAN.md — User-driven 16-scenario × 6-device-class test matrix walk on deployed Pages URL; closes deferred caveats from Phases 1-3 (XPLAT-01, XPLAT-02)
+
 **UI hint:** yes
 
 ### Phase 5: Distribution & Discovery
@@ -127,7 +134,7 @@ Plans:
 | 1. Score Export Parity | 3/3 | Complete   | 2026-05-29 |
 | 2. Instrument Persistence & Error Handling | 2/2 | Complete   | 2026-05-30 |
 | 3. YouTube Handoff Polish | 2/2 | Complete   | 2026-05-30 |
-| 4. Cross-Browser & Mobile | 0/0 | Not started | - |
+| 4. Cross-Browser & Mobile | 0/3 | Planned | - |
 | 5. Distribution & Discovery | 0/0 | Not started | - |
 
 ## Coverage Map
@@ -154,3 +161,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-05-27*
+*Phase 4 planned: 2026-05-30*
