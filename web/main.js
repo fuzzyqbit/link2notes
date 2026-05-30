@@ -186,11 +186,24 @@ function renderResult(result, instrument) {
   const abc = buildAbc(result, instrument);
   lastAbc = abc;
 
+  // Unhide the result section BEFORE measuring scoreEl.clientWidth so the
+  // container has a real layout box (hidden=true yields clientWidth: 0).
+  // Reordered from "unhide after renderAbc" specifically so the fluid-mobile
+  // CSS in Plan 04-01 Task 1 can size the SVG from the actual container.
+  resultEl.hidden = false;
+  // Subtract 24 to account for the .score 12px padding on each side; clamp to
+  // 280 so very narrow viewports (or transient pre-layout reads) still hand
+  // abcjs a usable engraver width instead of squashing the staff.
+  const containerWidth = Math.max(280, scoreEl.clientWidth - 24);
+
   // abcjs is loaded via the global <script> tag.
+  // responsive: "resize" adds the viewBox that lets .score svg { max-width: 100% }
+  // in style.css scale the staff down on later layout changes — the staffwidth
+  // above is just the engraver target at first paint.
   // eslint-disable-next-line no-undef
   ABCJS.renderAbc("score", abc, {
     responsive: "resize",
-    staffwidth: 740,
+    staffwidth: containerWidth,
     add_classes: true,
   });
 
@@ -198,8 +211,6 @@ function renderResult(result, instrument) {
   keyInfo.textContent = `Key: ${tonicName} ${result.key.mode}`;
   bpmInfo.textContent = `Practice tempo: ${result.bpm} BPM (source ≈ ${result.sourceBpm})`;
   lettersEl.textContent = result.letters;
-
-  resultEl.hidden = false;
 }
 
 // -----------------------------------------------------------------------------

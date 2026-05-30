@@ -309,6 +309,13 @@ button:hover:not(:disabled) { opacity: 0.9; }
   border-radius: 8px;
   padding: 12px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.score svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
 .letters {
@@ -339,4 +346,17 @@ footer {
 
 @media (max-width: 640px) {
   .controls { grid-template-columns: 1fr; }
+  /* On phones, the page (not the container) is the scroll surface — keeps
+     pinch-zoom on the SVG predictable instead of fighting a nested scroller. */
+  .score { overflow-x: hidden; }
+  .score svg { width: 100%; }
+  /* iOS Safari auto-zooms the viewport on focus for inputs whose computed
+     font-size is <16px. .field uses font-size: 0.9rem which inherits to its
+     children, so without this override the file/url/select fields trigger
+     that unwanted zoom on every focus. */
+  input[type="file"],
+  input[type="url"],
+  select {
+    font-size: 16px;
+  }
 }
