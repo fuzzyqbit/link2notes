@@ -2,33 +2,36 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-last_updated: "2026-05-29T01:13:11.400Z"
+status: executing
+last_updated: "2026-05-30T01:39:35.973Z"
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 3
+  total_plans: 5
   completed_plans: 3
   percent: 20
 ---
 
 # State: Link To Notes — Web App Promotion (v1.0)
 
-**Last updated:** 2026-05-29 (Phase 2 planned, paused before execute)
+**Last updated:** 2026-05-29 21:57 (Phase 2 execute mid-flight — both agents stalled at SUMMARY write)
 
 ## Project Reference
 
 - **Project:** Link To Notes
 - **Milestone:** v1.0 — Web App Promotion
 - **Core Value:** A learner gets a readable, playable score for their chosen wind instrument from a song link or audio file, with no install and no account.
-- **Current Focus:** Phase 02 — Instrument Persistence & Error Handling (next)
+- **Current Focus:** Phase 02 — Instrument Persistence & Error Handling
 
 ## Current Position
+
+Phase: 02 (Instrument Persistence & Error Handling) — EXECUTING
+Plan: 1 of 2
 
 - **Phase:** 1 — Score Export Parity — **COMPLETE** (passed-with-caveats per 01-VERIFICATION.md)
 - **Phase 2:** Instrument Persistence & Error Handling — **PLANNED** (2 plans, plan-checker PASS first round)
 - **Plan:** Plans 02-01 + 02-02 ready for execute (both Wave 1, disjoint files)
-- **Status:** Phase 2 planned, awaiting `/gsd-execute-phase 2`
+- **Status:** Executing Phase 02
 - **Progress:** `[##        ]` 1/5 phases complete (20%)
 
 ## Performance Metrics
@@ -71,13 +74,21 @@ progress:
 
 **Last session (2026-05-29 evening):** Planned Phase 2. RESEARCH.md committed (d450c09) — recommends new `web/storage.js` for PAR-03 + 20s reset-on-progress watchdog around `bp.evaluateModel` for XPLAT-03. 2 PLAN.md files committed (07db2fc) — plan-checker PASS first round, no revisions. Both plans Wave 1 with disjoint `files_modified` (Plan 02-01 touches storage.js + main.js; Plan 02-02 touches pipeline.js only). Paused before execute-phase per user request at 21:57.
 
-**Next session entry point:**
+**Next session entry point — Phase 2 execute MID-FLIGHT:**
 
-1. Run `/gsd-execute-phase 2` — both Plans can run in parallel (Wave 1, disjoint files).
-2. Plan 02-01 (instrument-persistence, PAR-03): 3 tasks (2 auto + 1 human-verify). Vertical slice: select tenor sax, reload, dropdown still tenor sax.
-3. Plan 02-02 (model-load-watchdog, XPLAT-03): 2 tasks (1 auto + 1 human-verify). Vertical slice: simulated 20s hang fails loudly with plain-language error.
-4. Each plan ends with a human-verify checkpoint — be ready to test in browser (Plan 02-02 verify includes simulating model-load failure, possibly via DevTools network throttle or stubbing).
-5. Test audio file `test-tune.aiff` lives at project root — reuse.
+Both Wave 1 executors ran in parallel worktrees + stalled at SUMMARY.md write (stream watchdog timeout same as Phase 1 Wave 2). All auto-task commits in place. Worktrees still mounted + locked. Resume = write SUMMARY.md inline + present checkpoints + merge.
+
+**Worktrees:**
+- `agent-a4aaaa548e4479a09` (Plan 02-01 instrument-persistence) — branch `worktree-agent-a4aaaa548e4479a09`, HEAD `95d3627`, 2 auto tasks committed
+- `agent-a53ba54b79a47eaee` (Plan 02-02 model-load-watchdog) — branch `worktree-agent-a53ba54b79a47eaee`, HEAD `c27ad9a`, RED `91c7d8e` + GREEN `c27ad9a` committed (TDD-style)
+
+**Resume steps:**
+1. Cd into each worktree, run all `<automated>` verifies from its PLAN.md, confirm OK
+2. Write SUMMARY.md inline for each (mirror Phase 1 wave 2 recovery pattern) — partial status awaiting human-verify
+3. Commit SUMMARY.md in each worktree
+4. Present both checkpoints to user — user must browser-test (select tenor sax → reload → still tenor sax for 02-01; model-load failure simulation for 02-02)
+5. After approval: merge both worktrees to main, cleanup, mark phase complete
+6. Test audio: `test-tune.aiff` at project root
 
 **Files of record:**
 
