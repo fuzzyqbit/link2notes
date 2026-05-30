@@ -28,6 +28,30 @@ const TARGET_BPM = 70;            // beginner-friendly practice tempo
 const MIN_NOTE_QL = 2.0;          // minimum quarter-note length after simplification
 const RUN_LIMIT = 2;              // collapse runs of same pitch beyond this many repeats
 
+// -----------------------------------------------------------------------------
+// Model-load watchdog (XPLAT-03)
+// -----------------------------------------------------------------------------
+// Why a reset-on-progress timer (not a flat setTimeout)?
+//   - basic-pitch's percent callback fires repeatedly during inference. As long
+//     as we see progress, the model is alive. A flat 20s setTimeout would
+//     false-positive on slow CDN cold loads where the model takes >20s to
+//     download but then runs fine.
+//   - We reset `lastTickAt = Date.now()` on every percent callback and poll
+//     every 1s. If we ever go >20s without a tick, we reject with a friendly
+//     ModelLoadError. The user sees the error between ~20-21s — matches the
+//     phase success criterion (~15s) within the polling-interval margin.
+//   - 20000ms threshold per 02-RESEARCH.md ("XPLAT-03 — Model failure detection").
+
+const MODEL_TIMEOUT_MS = 20000;
+const MODEL_ERROR_COPY = "This browser couldn't load the transcription model in time. It may not support the audio-to-notes AI. Try Chrome, Edge, or Firefox on a laptop or desktop computer.";
+
+export class ModelLoadError extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = "ModelLoadError";
+  }
+}
+
 // Krumhansl-Schmuckler major/minor pitch profiles.
 const KS_MAJOR = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
 const KS_MINOR = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
@@ -73,7 +97,27 @@ export async function extractNotes(audioBuffer, progress) {
   const frames = [];
   const onsets = [];
   const contours = [];
-  await bp.evaluateModel(
+
+  // Watchdog state. `lastTickAt` is reset on every percent callback below;
+  // the timeoutPromise polls every 1s and rejects if we go quiet for >20s.
+  let lastTickAt = Date.now();
+  let timeoutCleanup;
+
+  const timeoutPromise = new Promise((_, reject) => {
+    const id = setInterval(() => {
+      if (Date.now() - lastTickAt > MODEL_TIMEOUT_MS) {
+        clearInterval(id);
+        reject(new ModelLoadError(MODEL_ERROR_COPY));
+      }
+    }, 1000);
+    timeoutCleanup = () => clearInterval(id);
+  });
+
+  // Wrap the inference promise. The .catch converts CDN/fetch failures
+  // ("TypeError: Failed to fetch", 503s, CORS errors) into the same friendly
+  // ModelLoadError the watchdog uses, so the user never sees a raw network
+  // error string. The original error still goes to console.error via main.js.
+  const inferencePromise = bp.evaluateModel(
     audioBuffer,
     (f, o, c) => {
       frames.push(...f);
@@ -81,9 +125,25 @@ export async function extractNotes(audioBuffer, progress) {
       contours.push(...c);
     },
     (pct) => {
+      // Reset the watchdog FIRST so the progress callback's own work
+      // (forwarding to UI) can never accidentally race with the timer.
+      lastTickAt = Date.now();
       if (progress) progress({ stage: STAGE.TRANSCRIBING, label: STAGE_LABELS[STAGE.TRANSCRIBING], percent: pct });
     },
-  );
+  ).catch((err) => {
+    // Preserve the original error for developer debugging (main.js logs it)
+    // but rewrite the surfaced message to the curated user-facing copy.
+    if (err instanceof ModelLoadError) throw err;
+    throw new ModelLoadError(MODEL_ERROR_COPY);
+  });
+
+  try {
+    await Promise.race([inferencePromise, timeoutPromise]);
+  } finally {
+    // Always clear the polling interval — whether the race resolved with the
+    // inference or rejected with the watchdog or fetch-rethrow.
+    timeoutCleanup?.();
+  }
 
   // outputToNotesPoly(frames, onsets, onsetThresh, frameThresh, minNoteLen).
   const polyNotes = outputToNotesPoly(frames, onsets, 0.25, 0.25, 5);
