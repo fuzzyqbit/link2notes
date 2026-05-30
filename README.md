@@ -4,6 +4,8 @@ Turn a YouTube link or audio file into beginner-friendly sheet music for a singl
 
 **Try it now: <https://fuzzyqbit.github.io/link2notes/>**
 
+[![Deploy Pages](https://github.com/fuzzyqbit/link2notes/actions/workflows/pages.yml/badge.svg)](https://github.com/fuzzyqbit/link2notes/actions/workflows/pages.yml)
+
 No install. No account. No upload. Everything runs in your browser. Open the web app and you're one paste away from a playable score.
 
 ## How to use

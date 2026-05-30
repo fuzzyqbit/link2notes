@@ -41,9 +41,8 @@ ES modules need a real HTTP origin — don't open `index.html` via `file://`.
 
 ## Maintainer: Deploy to GitHub Pages
 
-Current deploy method (subject to change — see `.github/workflows/` for the Actions-based replacement).
+Deploy is automated by [`.github/workflows/pages.yml`](../.github/workflows/pages.yml). Every push to `main` builds and publishes the contents of `web/` to GitHub Pages, with status visible in the [Actions tab](https://github.com/fuzzyqbit/link2notes/actions/workflows/pages.yml) and the badge in the [root README](../README.md).
 
-1. Push this repo to GitHub.
-2. Repo settings → **Pages**.
-3. Source: **Deploy from a branch**, branch: `main` (or `master`), folder: `/web`.
-4. Save. Your site goes live at `https://<user>.github.io/<repo>/`.
+**One-time setup (required before the workflow can publish):** in repo Settings → **Pages**, set **Source** to **GitHub Actions**. Without this flip the workflow runs but the live site stays on the previous branch-based deploy mode, so the Actions run has no observable effect on the live URL.
+
+No build step — `web/` is uploaded as-is.
