@@ -21,7 +21,7 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
 ## Phases
 
 - [x] **Phase 1: Score Export Parity** — User can export the rendered score as MusicXML and PDF with clear stage-by-stage progress (completed 2026-05-29)
-- [ ] **Phase 2: Instrument Persistence & Error Handling** — Instrument choice survives reloads and model failures surface as readable errors
+- [x] **Phase 2: Instrument Persistence & Error Handling** — Instrument choice survives reloads and model failures surface as readable errors (completed 2026-05-30)
 - [ ] **Phase 3: YouTube Handoff Polish** — YouTube paste produces a one-click handoff to a verified working downloader with plain-language instructions
 - [ ] **Phase 4: Cross-Browser & Mobile** — Verified working pipeline and usable layout on iOS Safari, Android Chrome, and desktop browsers
 - [ ] **Phase 5: Distribution & Discovery** — Repo, README, and auto-deploy all point at the live web app as the recommended product
@@ -61,10 +61,10 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
   2. User on a browser that cannot load the basic-pitch model sees a clear, plain-language error within ~15 seconds instead of an indefinite spinner
   3. The error message names the likely cause (browser/device unable to run the model) and suggests trying a desktop browser
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
-  - [ ] 02-01-instrument-persistence-PLAN.md — localStorage persistence of instrument selection (PAR-03)
-  - [ ] 02-02-model-load-watchdog-PLAN.md — reset-on-progress watchdog + ModelLoadError friendly copy (XPLAT-03)
+  - [x] 02-01-instrument-persistence-PLAN.md — localStorage persistence of instrument selection (PAR-03)
+  - [x] 02-02-model-load-watchdog-PLAN.md — reset-on-progress watchdog + ModelLoadError friendly copy (XPLAT-03)
 
 **UI hint:** yes
 
@@ -119,7 +119,7 @@ The existing `web/pipeline.js`, abcjs render layer, instrument dropdown, and Pag
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Score Export Parity | 3/3 | Complete   | 2026-05-29 |
-| 2. Instrument Persistence & Error Handling | 0/2 | Planned | - |
+| 2. Instrument Persistence & Error Handling | 2/2 | Complete   | 2026-05-30 |
 | 3. YouTube Handoff Polish | 0/0 | Not started | - |
 | 4. Cross-Browser & Mobile | 0/0 | Not started | - |
 | 5. Distribution & Discovery | 0/0 | Not started | - |
