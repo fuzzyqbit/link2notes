@@ -102,12 +102,12 @@ Plans:
   3. User on desktop Chrome, Safari, Firefox, and Edge can complete the same flow (smoke-tested per browser)
   4. On a phone-sized viewport, the page has no horizontal scroll, primary controls (file picker, instrument, convert, export) are reachable with one thumb, and the rendered score pans/zooms readably
 
-**Plans:** 3 plans
+**Plans:** 2/3 plans executed
 
 Plans:
 
-- [ ] 04-01-mobile-layout-PLAN.md — Fluid score container CSS + main.js renderAbc container-width fix + iOS-safe 16px input font-size (XPLAT-02)
-- [ ] 04-02-audio-upload-hardening-PLAN.md — Widen file accept attribute for iOS Voice Memos + AudioDecodeError friendly copy on decode failure (XPLAT-01)
+- [x] 04-01-mobile-layout-PLAN.md — Fluid score container CSS + main.js renderAbc container-width fix + iOS-safe 16px input font-size (XPLAT-02)
+- [x] 04-02-audio-upload-hardening-PLAN.md — Widen file accept attribute for iOS Voice Memos + AudioDecodeError friendly copy on decode failure (XPLAT-01)
 - [ ] 04-03-test-matrix-walkthrough-PLAN.md — User-driven 16-scenario × 6-device-class test matrix walk on deployed Pages URL; closes deferred caveats from Phases 1-3 (XPLAT-01, XPLAT-02)
 
 **UI hint:** yes
@@ -134,7 +134,7 @@ Plans:
 | 1. Score Export Parity | 3/3 | Complete   | 2026-05-29 |
 | 2. Instrument Persistence & Error Handling | 2/2 | Complete   | 2026-05-30 |
 | 3. YouTube Handoff Polish | 2/2 | Complete   | 2026-05-30 |
-| 4. Cross-Browser & Mobile | 0/3 | Planned | - |
+| 4. Cross-Browser & Mobile | 2/3 | In Progress|  |
 | 5. Distribution & Discovery | 0/0 | Not started | - |
 
 ## Coverage Map
