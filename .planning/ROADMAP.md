@@ -125,7 +125,15 @@ Plans:
   3. A push to `main` triggers an automated deploy of `web/` to GitHub Pages, and the deploy's success or failure is visible in the repo (Actions tab, badge, or equivalent surface)
   4. User can confirm a fresh deploy is live within minutes of a push by visiting the published URL
 
-**Plans:** TBD
+**Plans:** 3 plans
+
+Plans:
+
+- [ ] 05-01-root-readme-PLAN.md — New repo-root README.md leads with live Pages URL; desktop reframed as optional power-user build (DIST-01)
+- [ ] 05-02-web-readme-reposition-PLAN.md — Rewrite web/README.md to lead with hosted URL; demote "Run locally" to contributor section; cross-link to root README (DIST-01)
+- [ ] 05-03-deploy-status-and-discovery-PLAN.md — Add .github/workflows/pages.yml for visible push-to-main deploy; status badge in root README; human checkpoint to flip Pages source to Actions + set repo About website link (DIST-02, DIST-03)
+
+**UI hint:** no
 
 ## Progress
 
@@ -135,7 +143,7 @@ Plans:
 | 2. Instrument Persistence & Error Handling | 2/2 | Complete   | 2026-05-30 |
 | 3. YouTube Handoff Polish | 2/2 | Complete   | 2026-05-30 |
 | 4. Cross-Browser & Mobile | 2/3 | In Progress|  |
-| 5. Distribution & Discovery | 0/0 | Not started | - |
+| 5. Distribution & Discovery | 0/3 | Planned | - |
 
 ## Coverage Map
 
@@ -162,3 +170,4 @@ Plans:
 ---
 *Roadmap created: 2026-05-27*
 *Phase 4 planned: 2026-05-30*
+*Phase 5 planned: 2026-05-30*
