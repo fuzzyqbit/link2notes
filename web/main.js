@@ -5,6 +5,7 @@ import { runPipeline, midiToNameForKey, preferredAccidental } from "./pipeline.j
 import { STAGE_ORDER, STAGE_LABELS } from "./stages.js";
 import { buildMusicXml } from "./musicxml.js";
 import { loadInstrument, saveInstrument } from "./storage.js";
+import { PRIMARY, DOWNLOADERS } from "./downloaders.js";
 
 const ytUrlInput = document.getElementById("yt-url");
 const getAudioBtn = document.getElementById("get-audio-btn");
@@ -49,25 +50,28 @@ fileInput.addEventListener("change", () => {
   convertBtn.disabled = !fileInput.files?.length;
 });
 
-// Cycle through a few converter sites — pick whichever still works today.
-// savefrom.net accepts ?url= for prefill; if that breaks, fall back to its
-// `ss`-prefix URL hack (works for youtube.com and music.youtube.com).
+// Handoff URL construction lives in downloaders.js (the single-source-of-truth
+// registry). To swap downloaders, edit DOWNLOADERS in that file — never inline
+// a URL here. See web/downloaders.js header for the verification ritual.
 function converterUrlFor(youtubeUrl) {
-  return `https://en.savefrom.net/391/?url=${encodeURIComponent(youtubeUrl)}`;
+  return PRIMARY.urlFor(youtubeUrl);
 }
 
-getAudioBtn.addEventListener("click", async () => {
+getAudioBtn.addEventListener("click", () => {
   const url = ytUrlInput.value.trim();
   if (!url) {
     ytUrlInput.focus();
     return;
   }
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(url);
-    }
-  } catch { /* clipboard blocked — user can paste manually */ }
+  // iOS Safari only honours window.open inside the synchronous click handler.
+  // If we awaited the clipboard write first, the user-gesture context would be
+  // gone by the time the open call ran, and the popup would be blocked.
+  // Open the downloader FIRST; clipboard is fire-and-forget after.
   window.open(converterUrlFor(url), "_blank", "noopener");
+  if (navigator.clipboard?.writeText) {
+    // Permission denied is fine — the downloader is already prefilled.
+    navigator.clipboard.writeText(url).catch(() => { /* clipboard blocked */ });
+  }
 });
 
 ytUrlInput.addEventListener("keydown", (e) => {
@@ -457,4 +461,29 @@ function downloadBlob(content, filename, mime) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// -----------------------------------------------------------------------------
+// Alternates list renderer
+// -----------------------------------------------------------------------------
+// Populates <ul id="alt-downloaders"> from the DOWNLOADERS registry so the
+// visible fallback list and the Get MP3 button can never drift apart.
+// Defensive: if the element is absent (parallel-safe with Plan 03-02, which
+// owns the HTML rewrite that introduces it), bail silently — main.js still
+// loads in the browser without errors before Plan 03-02 ships.
+const altList = document.getElementById("alt-downloaders");
+if (altList) {
+  for (const d of DOWNLOADERS) {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = d.landingUrl;
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.textContent = d.name;
+    li.appendChild(a);
+    if (d.note) {
+      li.appendChild(document.createTextNode(` — ${d.note}`));
+    }
+    altList.appendChild(li);
+  }
 }
