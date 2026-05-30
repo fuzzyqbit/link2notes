@@ -52,6 +52,24 @@ export class ModelLoadError extends Error {
   }
 }
 
+// -----------------------------------------------------------------------------
+// Audio decode error (XPLAT-01)
+// -----------------------------------------------------------------------------
+// Symmetric with ModelLoadError: pipeline throws, main.js's existing catch
+// shows err.message via showError. No main.js change needed — the curated
+// copy lives in .message. Curated copy names MP3/WAV as safe fallbacks and
+// calls out the iPhone Voice Memos export path (the highest-MIME-friction
+// case per 04-RESEARCH.md Pitfall 3).
+
+const AUDIO_DECODE_COPY = "We couldn't decode this audio file in your browser. Try MP3 or WAV — those work everywhere. If you exported from iPhone Voice Memos, share it from the Voice Memos app as an MP3 first.";
+
+export class AudioDecodeError extends Error {
+  constructor(msg) {
+    super(msg);
+    this.name = "AudioDecodeError";
+  }
+}
+
 // Krumhansl-Schmuckler major/minor pitch profiles.
 const KS_MAJOR = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
 const KS_MINOR = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
@@ -70,7 +88,16 @@ export async function decodeAudio(file, progress) {
   const arrayBuf = await file.arrayBuffer();
   const Ctx = window.AudioContext || window.webkitAudioContext;
   const tmp = new Ctx();
-  const decoded = await tmp.decodeAudioData(arrayBuf);
+  let decoded;
+  try {
+    decoded = await tmp.decodeAudioData(arrayBuf);
+  } catch (err) {
+    // Close the AudioContext on the failure path too (mirrors the success-path
+    // close below) so retries don't leak contexts. main.js's existing catch
+    // logs the original err via console.error before showError(err.message).
+    tmp.close();
+    throw new AudioDecodeError(AUDIO_DECODE_COPY);
+  }
   tmp.close();
 
   if (decoded.sampleRate === BP_SAMPLE_RATE && decoded.numberOfChannels === 1) return decoded;
