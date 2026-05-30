@@ -4,6 +4,7 @@ import { INSTRUMENTS, INSTRUMENT_ORDER } from "./instruments.js";
 import { runPipeline, midiToNameForKey, preferredAccidental } from "./pipeline.js";
 import { STAGE_ORDER, STAGE_LABELS } from "./stages.js";
 import { buildMusicXml } from "./musicxml.js";
+import { loadInstrument, saveInstrument } from "./storage.js";
 
 const ytUrlInput = document.getElementById("yt-url");
 const getAudioBtn = document.getElementById("get-audio-btn");
@@ -33,7 +34,16 @@ for (const id of INSTRUMENT_ORDER) {
   opt.textContent = INSTRUMENTS[id].label;
   instSelect.appendChild(opt);
 }
-instSelect.value = "altoSax";
+// Restore the user's last-selected instrument from localStorage. The
+// INSTRUMENTS[saved] guard rejects unknown keys (a removed/renamed
+// instrument from a future release, or hand-edited storage) and silently
+// falls back to altoSax. saveInstrument fires on every committed
+// selection so the next reload restores it.
+const saved = loadInstrument();
+instSelect.value = (saved && INSTRUMENTS[saved]) ? saved : "altoSax";
+instSelect.addEventListener("change", () => {
+  saveInstrument(instSelect.value);
+});
 
 fileInput.addEventListener("change", () => {
   convertBtn.disabled = !fileInput.files?.length;
