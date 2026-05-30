@@ -14,7 +14,7 @@ progress:
 
 # State: Link To Notes — Web App Promotion (v1.0)
 
-**Last updated:** 2026-05-29 (Phase 1 complete, paused before Phase 2)
+**Last updated:** 2026-05-29 (Phase 2 planned, paused before execute)
 
 ## Project Reference
 
@@ -26,8 +26,9 @@ progress:
 ## Current Position
 
 - **Phase:** 1 — Score Export Parity — **COMPLETE** (passed-with-caveats per 01-VERIFICATION.md)
-- **Plan:** All 3 plans shipped (01-01 stage progress, 01-02 musicxml, 01-03 pdf hardening)
-- **Status:** Phase 1 complete, Phase 2 not yet planned
+- **Phase 2:** Instrument Persistence & Error Handling — **PLANNED** (2 plans, plan-checker PASS first round)
+- **Plan:** Plans 02-01 + 02-02 ready for execute (both Wave 1, disjoint files)
+- **Status:** Phase 2 planned, awaiting `/gsd-execute-phase 2`
 - **Progress:** `[##        ]` 1/5 phases complete (20%)
 
 ## Performance Metrics
@@ -68,13 +69,15 @@ progress:
 
 ## Session Continuity
 
-**Last session (2026-05-29):** Phase 1 fully executed + verified. All 3 plans shipped (01-01 stage progress, 01-02 musicxml, 01-03 pdf hardening) across 3 worktrees, merged to main, summaries committed. Wave 1 user-tested + approved (all 4 stages light up). Waves 2+3 code-trace-approved on automated test + structural inspection (12/12 + 6/6 verifies OK respectively) — MuseScore install blocked by sudo + no real iOS device for popup-blocker/iOS test. Verifier returned `passed-with-caveats` (4/4 success criteria met; visual MuseScore + real-iOS smoke deferred to Phase 4). Sample-rate fix added to pipeline.js mid-Wave-1 (pre-existing bug — basic-pitch rejected 44100; now resamples to 22050 mono via OfflineAudioContext).
+**Last session (2026-05-29 evening):** Planned Phase 2. RESEARCH.md committed (d450c09) — recommends new `web/storage.js` for PAR-03 + 20s reset-on-progress watchdog around `bp.evaluateModel` for XPLAT-03. 2 PLAN.md files committed (07db2fc) — plan-checker PASS first round, no revisions. Both plans Wave 1 with disjoint `files_modified` (Plan 02-01 touches storage.js + main.js; Plan 02-02 touches pipeline.js only). Paused before execute-phase per user request at 21:57.
 
 **Next session entry point:**
 
-1. Plan Phase 2: `/gsd-plan-phase 2` — Instrument Persistence & Error Handling (PAR-03, XPLAT-03)
-2. Phase 2 scope: localStorage persistence of last-selected instrument + clear error path for known failure modes (popup blocker, model load failure, no notes detected — the showError integration points already exist in main.js from Phase 1)
-3. Or jump ahead with `/gsd-execute-phase 2` after planning
+1. Run `/gsd-execute-phase 2` — both Plans can run in parallel (Wave 1, disjoint files).
+2. Plan 02-01 (instrument-persistence, PAR-03): 3 tasks (2 auto + 1 human-verify). Vertical slice: select tenor sax, reload, dropdown still tenor sax.
+3. Plan 02-02 (model-load-watchdog, XPLAT-03): 2 tasks (1 auto + 1 human-verify). Vertical slice: simulated 20s hang fails loudly with plain-language error.
+4. Each plan ends with a human-verify checkpoint — be ready to test in browser (Plan 02-02 verify includes simulating model-load failure, possibly via DevTools network throttle or stubbing).
+5. Test audio file `test-tune.aiff` lives at project root — reuse.
 
 **Files of record:**
 
